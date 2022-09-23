@@ -2646,6 +2646,47 @@ void PlotImage(const char* label_id, ImTextureID user_texture_id, const ImPlotPo
 // [SECTION] PlotText
 //-----------------------------------------------------------------------------
 
+// Helper function for PlotText()
+// Adjust the text position, based on the anchor flags specified, if any
+static void PlotTextAdjustPos(ImVec2 &pos, const ImVec2 &siz,
+                              ImPlotTextFlags flags)
+{
+    // Get anchor flag bits
+    int anchor = flags & ImPlotTextFlags_AnchorMask;
+
+    switch (anchor) {
+    case ImPlotTextFlags_AnchorT:
+        pos.x -= siz.x * 0.5f;
+        break;
+    case ImPlotTextFlags_AnchorTR:
+        pos.x -= siz.x;
+        break;
+    case ImPlotTextFlags_AnchorR:
+        pos.x -= siz.x;
+        pos.y -= siz.y * 0.5f;
+        break;
+    case ImPlotTextFlags_AnchorBR:
+        pos.x -= siz.x;
+        pos.y -= siz.y;
+        break;
+    case ImPlotTextFlags_AnchorB:
+        pos.x -= siz.x * 0.5f;
+        pos.y -= siz.y;
+        break;
+    case ImPlotTextFlags_AnchorBL:
+        pos.y -= siz.y;
+        break;
+    case ImPlotTextFlags_AnchorL:
+        pos.y -= siz.y * 0.5f;
+        break;
+    case ImPlotTextFlags_AnchorTL:
+        break;
+    default:  // default is center
+        pos -= siz * 0.5f;
+        break;
+    }
+}
+
 void PlotText(const char* text, double x, double y, const ImVec2& pixel_offset, ImPlotTextFlags flags) {
     IM_ASSERT_USER_ERROR(GImPlot->CurrentPlot != NULL, "PlotText() needs to be called between BeginPlot() and EndPlot()!");
     SetupLock();
@@ -2653,57 +2694,19 @@ void PlotText(const char* text, double x, double y, const ImVec2& pixel_offset, 
     PushPlotClipRect();
     ImU32 colTxt = GetStyleColorU32(ImPlotCol_InlayText);
 
+    ImVec2 siz;
     ImVec2 pos = PlotToPixels(ImPlotPoint(x, y), IMPLOT_AUTO, IMPLOT_AUTO)
             + pixel_offset;
-    ImVec2 siz;
-
-    auto adjustPos = [&pos, &siz, flags]() -> void
-    {
-        // Get anchor flag bits
-        int anchor = flags & ImPlotTextFlags_AnchorMask;
-
-        switch (anchor) {
-        case ImPlotTextFlags_AnchorT:
-            pos.x -= siz.x * 0.5f;
-            break;
-        case ImPlotTextFlags_AnchorTR:
-            pos.x -= siz.x;
-            break;
-        case ImPlotTextFlags_AnchorR:
-            pos.x -= siz.x;
-            pos.y -= siz.y * 0.5f;
-            break;
-        case ImPlotTextFlags_AnchorBR:
-            pos.x -= siz.x;
-            pos.y -= siz.y;
-            break;
-        case ImPlotTextFlags_AnchorB:
-            pos.x -= siz.x * 0.5f;
-            pos.y -= siz.y;
-            break;
-        case ImPlotTextFlags_AnchorBL:
-            pos.y -= siz.y;
-            break;
-        case ImPlotTextFlags_AnchorL:
-            pos.y -= siz.y * 0.5f;
-            break;
-        case ImPlotTextFlags_AnchorTL:
-            break;
-        default:  // default is center
-            pos -= siz * 0.5f;
-            break;
-        }
-    };
 
     if (ImHasFlag(flags, ImPlotTextFlags_Vertical)) {
         siz = CalcTextSizeVertical(text);
         pos.y += siz.y;
-        adjustPos();
+        PlotTextAdjustPos(pos, siz, flags);
         AddTextVertical(&draw_list, pos, colTxt, text);
     }
     else {
         siz = ImGui::CalcTextSize(text);
-        adjustPos();
+        PlotTextAdjustPos(pos, siz, flags);
         draw_list.AddText(pos, colTxt, text);
     }
 
