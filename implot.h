@@ -320,7 +320,21 @@ enum ImPlotImageFlags_ {
 // Flags for PlotText
 enum ImPlotTextFlags_ {
     ImPlotTextFlags_None     = 0,       // default
-    ImPlotTextFlags_Vertical = 1 << 10  // text will be rendered vertically
+    ImPlotTextFlags_Vertical = 1 << 10, // text will be rendered vertically
+
+    // Select text anchor point.
+    // Default is center, when none of these flags is specified.
+    // To save bits, bit 11 is set for all Anchor* flags, and the next
+    // 3 bits set the edge. This uses only 4 bits instead of 8.
+    ImPlotTextFlags_AnchorT =    0b0001 << 11,  // top
+    ImPlotTextFlags_AnchorTR =   0b0011 << 11,  // top-right
+    ImPlotTextFlags_AnchorR =    0b0101 << 11,  // right
+    ImPlotTextFlags_AnchorBR =   0b0111 << 11,  // bottom-right
+    ImPlotTextFlags_AnchorB =    0b1001 << 11,  // bottom
+    ImPlotTextFlags_AnchorBL =   0b1011 << 11,  // bottom-left
+    ImPlotTextFlags_AnchorL =    0b1101 << 11,  // left
+    ImPlotTextFlags_AnchorTL =   0b1111 << 11,  // top-left
+    ImPlotTextFlags_AnchorMask = 0b1111 << 11,  // all anchor bits
 };
 
 // Flags for PlotDummy (placeholder)

@@ -2652,25 +2652,66 @@ void PlotText(const char* text, double x, double y, const ImVec2& pixel_offset, 
     ImDrawList & draw_list = *GetPlotDrawList();
     PushPlotClipRect();
     ImU32 colTxt = GetStyleColorU32(ImPlotCol_InlayText);
-    if (ImHasFlag(flags,ImPlotTextFlags_Vertical)) {
-        ImVec2 siz = CalcTextSizeVertical(text) * 0.5f;
-        ImVec2 ctr = siz * 0.5f;
-        ImVec2 pos = PlotToPixels(ImPlotPoint(x,y),IMPLOT_AUTO,IMPLOT_AUTO) + ImVec2(-ctr.x, ctr.y) + pixel_offset;
-        if (FitThisFrame() && (flags & ImPlotItemFlags_NoFit) == 0) {
-            FitPoint(PixelsToPlot(pos));
-            FitPoint(PixelsToPlot(pos.x + siz.x, pos.y - siz.y));
+
+    ImVec2 pos = PlotToPixels(ImPlotPoint(x, y), IMPLOT_AUTO, IMPLOT_AUTO)
+            + pixel_offset;
+    ImVec2 siz;
+
+    auto adjustPos = [&pos, &siz, flags]() -> void
+    {
+        // Get anchor flag bits
+        int anchor = flags & ImPlotTextFlags_AnchorMask;
+
+        switch (anchor) {
+        case ImPlotTextFlags_AnchorT:
+            pos.x -= siz.x * 0.5f;
+            break;
+        case ImPlotTextFlags_AnchorTR:
+            pos.x -= siz.x;
+            break;
+        case ImPlotTextFlags_AnchorR:
+            pos.x -= siz.x;
+            pos.y -= siz.y * 0.5f;
+            break;
+        case ImPlotTextFlags_AnchorBR:
+            pos.x -= siz.x;
+            pos.y -= siz.y;
+            break;
+        case ImPlotTextFlags_AnchorB:
+            pos.x -= siz.x * 0.5f;
+            pos.y -= siz.y;
+            break;
+        case ImPlotTextFlags_AnchorBL:
+            pos.y -= siz.y;
+            break;
+        case ImPlotTextFlags_AnchorL:
+            pos.y -= siz.y * 0.5f;
+            break;
+        case ImPlotTextFlags_AnchorTL:
+            break;
+        default:  // default is center
+            pos -= siz * 0.5f;
+            break;
         }
+    };
+
+    if (ImHasFlag(flags, ImPlotTextFlags_Vertical)) {
+        siz = CalcTextSizeVertical(text);
+        pos.y += siz.y;
+        adjustPos();
         AddTextVertical(&draw_list, pos, colTxt, text);
     }
     else {
-        ImVec2 siz = ImGui::CalcTextSize(text);
-        ImVec2 pos = PlotToPixels(ImPlotPoint(x,y),IMPLOT_AUTO,IMPLOT_AUTO) - siz * 0.5f + pixel_offset;
-        if (FitThisFrame() && (flags & ImPlotItemFlags_NoFit) == 0) {
-            FitPoint(PixelsToPlot(pos));
-            FitPoint(PixelsToPlot(pos+siz));
-        }
+        siz = ImGui::CalcTextSize(text);
+        adjustPos();
         draw_list.AddText(pos, colTxt, text);
     }
+
+    if (FitThisFrame() && (flags & ImPlotItemFlags_NoFit) == 0) {
+        FitPoint(PixelsToPlot(pos));
+        FitPoint(PixelsToPlot(pos + siz));
+    }
+
     PopPlotClipRect();
 }
 
