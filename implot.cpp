@@ -4934,6 +4934,32 @@ void PushPlotClipRect(float expand) {
     SetupLock();
     ImRect rect = gp.CurrentPlot->PlotRect;
     rect.Expand(expand);
+
+    ImPlotPlot &plot = *gp.CurrentPlot;
+
+    ImRect frameRect = gp.CurrentSubplot ?
+                gp.CurrentSubplot->FrameRect
+              : plot.FrameRect;
+
+    const ImPlotAxis &xAxis = plot.Axes[plot.CurrentX];
+    const ImPlotAxis &yAxis = plot.Axes[plot.CurrentY];
+
+    if (xAxis.Flags & ImPlotAxisFlags_NoClipMin) {
+        rect.Min.x = frameRect.Min.x;
+    }
+
+    if (xAxis.Flags & ImPlotAxisFlags_NoClipMax) {
+        rect.Max.x = frameRect.Max.x;
+    }
+
+    if (yAxis.Flags & ImPlotAxisFlags_NoClipMin) {
+        rect.Min.y = frameRect.Min.y;
+    }
+
+    if (yAxis.Flags & ImPlotAxisFlags_NoClipMax) {
+        rect.Max.y = frameRect.Max.y;
+    }
+
     ImGui::PushClipRect(rect.Min, rect.Max, true);
 }
 
