@@ -4938,8 +4938,7 @@ void PushPlotClipRect(float expand) {
     ImPlotPlot &plot = *gp.CurrentPlot;
 
     ImRect frameRect = gp.CurrentSubplot ?
-                gp.CurrentSubplot->FrameRect
-              : plot.FrameRect;
+                gp.CurrentSubplot->FrameRect : plot.FrameRect;
 
     const ImPlotAxis &xAxis = plot.Axes[plot.CurrentX];
     const ImPlotAxis &yAxis = plot.Axes[plot.CurrentY];

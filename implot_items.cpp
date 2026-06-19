@@ -1522,25 +1522,60 @@ void RenderPrimitivesEx(const _Renderer& renderer, ImDrawList& draw_list, const 
         draw_list.PrimUnreserve(prims_culled * renderer.IdxConsumed, prims_culled * renderer.VtxConsumed);
 }
 
+namespace {
+
+// Create the cull rectangle, adjusted according to the flags
+// ImPlotAxisFlags_NoClipMin and ImPlotAxisFlags_NoClipMax, if set
+ImRect getCullRect()
+{
+    ImPlotContext& gp = *GImPlot;
+    const ImPlotPlot& plot = *gp.CurrentPlot;
+    const ImPlotAxis& x_axis = plot.Axes[plot.CurrentX];
+    const ImPlotAxis& y_axis = plot.Axes[plot.CurrentY];
+
+    const ImRect &frameRect = gp.CurrentSubplot
+                                  ? gp.CurrentSubplot->FrameRect
+                                  : plot.FrameRect;
+
+    ImRect rv = plot.PlotRect;
+
+    if (x_axis.Flags & ImPlotAxisFlags_NoClipMin) {
+        rv.Min.x = frameRect.Min.x;
+    }
+
+    if (x_axis.Flags & ImPlotAxisFlags_NoClipMax) {
+        rv.Max.x = frameRect.Max.x;
+    }
+
+    if (y_axis.Flags & ImPlotAxisFlags_NoClipMin) {
+        rv.Min.y = frameRect.Min.y;
+    }
+
+    if (y_axis.Flags & ImPlotAxisFlags_NoClipMax) {
+        rv.Max.y = frameRect.Max.y;
+    }
+
+    return rv;
+}
+
+}  // anonymous namespace
+
 template <template <class> class _Renderer, class _Getter, typename ...Args>
 void RenderPrimitives1(const _Getter& getter, Args... args) {
     ImDrawList& draw_list = *GetPlotDrawList();
-    const ImRect& cull_rect = GetCurrentPlot()->PlotRect;
-    RenderPrimitivesEx(_Renderer<_Getter>(getter,args...), draw_list, cull_rect);
+    RenderPrimitivesEx(_Renderer<_Getter>(getter,args...), draw_list, getCullRect());
 }
 
 template <template <class,class> class _Renderer, class _Getter1, class _Getter2, typename ...Args>
 void RenderPrimitives2(const _Getter1& getter1, const _Getter2& getter2, Args... args) {
     ImDrawList& draw_list = *GetPlotDrawList();
-    const ImRect& cull_rect = GetCurrentPlot()->PlotRect;
-    RenderPrimitivesEx(_Renderer<_Getter1,_Getter2>(getter1,getter2,args...), draw_list, cull_rect);
+    RenderPrimitivesEx(_Renderer<_Getter1,_Getter2>(getter1,getter2,args...), draw_list, getCullRect());
 }
 
 template <template <class,class,class> class _Renderer, class _Getter1, class _Getter2, class _Getter3, typename ...Args>
 void RenderPrimitives3(const _Getter1& getter1, const _Getter2& getter2, const _Getter3& getter3, Args... args) {
     ImDrawList& draw_list = *GetPlotDrawList();
-    const ImRect& cull_rect = GetCurrentPlot()->PlotRect;
-    RenderPrimitivesEx(_Renderer<_Getter1,_Getter2,_Getter3>(getter1,getter2,getter3,args...), draw_list, cull_rect);
+    RenderPrimitivesEx(_Renderer<_Getter1,_Getter2,_Getter3>(getter1,getter2,getter3,args...), draw_list, getCullRect());
 }
 
 //-----------------------------------------------------------------------------
