@@ -1923,8 +1923,8 @@ bool UpdateInput(ImPlotPlot& plot) {
             if (x_click[i] && IO.MouseDoubleClicked[gp.InputMap.Fit])
                 plot.FitThisFrame = xax.FitThisFrame = true;
             xax.Held  = xax.Held && can_pan;
-            x_hov[i]  = xax.Hovered || plot.Hovered;
-            x_held[i] = xax.Held    || plot.Held;
+            x_hov[i]  = xax.Hovered || (plot.Hovered && !ImHasFlag(xax.Flags, ImPlotAxisFlags_NoZoomWhenPlotHovered));
+            x_held[i] = xax.Held    || (plot.Held && !ImHasFlag(xax.Flags, ImPlotAxisFlags_NoPanWhenPlotDragged));
         }
     }
 
@@ -1936,8 +1936,8 @@ bool UpdateInput(ImPlotPlot& plot) {
             if (y_click[i] && IO.MouseDoubleClicked[gp.InputMap.Fit])
                 plot.FitThisFrame = yax.FitThisFrame = true;
             yax.Held  = yax.Held && can_pan;
-            y_hov[i]  = yax.Hovered || plot.Hovered;
-            y_held[i] = yax.Held    || plot.Held;
+            y_hov[i]  = yax.Hovered || (plot.Hovered && !ImHasFlag(yax.Flags, ImPlotAxisFlags_NoZoomWhenPlotHovered));
+            y_held[i] = yax.Held    || (plot.Held && !ImHasFlag(yax.Flags, ImPlotAxisFlags_NoPanWhenPlotDragged));
         }
     }
 

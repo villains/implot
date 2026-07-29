@@ -192,6 +192,8 @@ enum ImPlotAxisFlags_ {
     ImPlotAxisFlags_LockMax       = 1 << 15, // the axis maximum value will be locked when panning/zooming
     ImPlotAxisFlags_NoClipMin     = 1 << 16, // don't clip plot graphics at this axis mininum
     ImPlotAxisFlags_NoClipMax     = 1 << 17, // don't clip plot graphics at this axis maximum
+    ImPlotAxisFlags_NoZoomWhenPlotHovered = 1 << 18,  // don't zoom this axis when scroll wheel is used while hovering plot
+    ImPlotAxisFlags_NoPanWhenPlotDragged = 1 << 19,  // don't pan this axis when dragging the plot
     ImPlotAxisFlags_NoClip        = ImPlotAxisFlags_NoClipMin | ImPlotAxisFlags_NoClipMax,
     ImPlotAxisFlags_Lock          = ImPlotAxisFlags_LockMin | ImPlotAxisFlags_LockMax,
     ImPlotAxisFlags_NoDecorations = ImPlotAxisFlags_NoLabel | ImPlotAxisFlags_NoGridLines | ImPlotAxisFlags_NoTickMarks | ImPlotAxisFlags_NoTickLabels,
