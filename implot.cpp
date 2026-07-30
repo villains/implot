@@ -1899,7 +1899,7 @@ bool UpdateInput(ImPlotPlot& plot) {
         if (IO.MouseDoubleClicked[gp.InputMap.Fit]) {
             plot.FitThisFrame = true;
             for (int i = 0; i < ImAxis_COUNT; ++i)
-                plot.Axes[i].FitThisFrame = true;
+                plot.Axes[i].FitThisFrame = !ImHasFlag(plot.Axes[i].Flags, ImPlotAxisFlags_NoFitWhenPlotDoubleClicked);
         }
     }
 
