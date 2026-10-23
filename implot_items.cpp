@@ -1545,21 +1545,21 @@ ImRect getCullRect()
                                   ? gp.CurrentSubplot->FrameRect
                                   : plot.FrameRect;
 
-    ImRect rv = plot.PlotRect;
+    ImRect rv = plot.PlotRect;  // return value
 
-    if (x_axis.Flags & ImPlotAxisFlags_NoClipMin) {
+    if (ImHasFlag(x_axis.Flags, ImPlotAxisFlags_NoClipMin)) {
         rv.Min.x = frameRect.Min.x;
     }
 
-    if (x_axis.Flags & ImPlotAxisFlags_NoClipMax) {
+    if (ImHasFlag(x_axis.Flags, ImPlotAxisFlags_NoClipMax)) {
         rv.Max.x = frameRect.Max.x;
     }
 
-    if (y_axis.Flags & ImPlotAxisFlags_NoClipMin) {
+    if (ImHasFlag(y_axis.Flags, ImPlotAxisFlags_NoClipMin)) {
         rv.Min.y = frameRect.Min.y;
     }
 
-    if (y_axis.Flags & ImPlotAxisFlags_NoClipMax) {
+    if (ImHasFlag(y_axis.Flags, ImPlotAxisFlags_NoClipMax)) {
         rv.Max.y = frameRect.Max.y;
     }
 
